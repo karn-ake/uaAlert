@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+	"uaAlert/repository"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -11,6 +13,31 @@ import (
 func main() {
 	db := initmongodb()
 	_ = db
+
+	repo := repository.New(db)
+	// repo.Update()
+
+	result, err := repo.DelAll()
+	if err != nil {log.Fatal(err)}
+	fmt.Println(result)
+	
+	clients, err := repo.FindAll()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var cl repository.Client
+	for _ , cl = range clients {
+		fmt.Println(cl.ClientName)
+	}
+
+	client, err := repo.FindbyClientName("BLP")
+	if err != nil { log.Fatal(err)}
+
+	// var cl repository.Client
+	for _ , cl = range client {
+		fmt.Println(cl.ClientName)
+	}
 }
 
 func initmongodb() *mongo.Client {

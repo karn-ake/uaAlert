@@ -1,5 +1,10 @@
 package repository
 
-type Repository interface{
-	FindAll() ([]string,error)
+import "go.mongodb.org/mongo-driver/mongo"
+
+type Repository interface {
+	FindAll() ([]Client, error)
+	FindbyClientName(cn string) ([]Client, error)
+	Update() error
+	DelAll() (*mongo.DeleteResult, error)
 }
