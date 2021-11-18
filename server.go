@@ -36,9 +36,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// var cl repository.Client
 	for _, cl = range client {
-		log.Printf("Client name: %s, Log file on: %s",cl.ClientName,cl.LogFile)
+		log.Printf("Client name: %s, Log file on: %s", cl.ClientName, cl.LogFile)
 	}
 }
 
