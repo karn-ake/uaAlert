@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,9 +24,9 @@ func New(db *mongo.Client) Repository {
 
 func (m mongoRepository) FindAll() ([]Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println("Connection to MongoDB alive")
+	log.Println("Connection to MongoDB alive")
 
 	coll := m.db.Database("monitor").Collection("logfile")
 	results, err := coll.Find(context.TODO(), bson.D{{}})
@@ -45,12 +45,12 @@ func (m mongoRepository) FindAll() ([]Client, error) {
 
 func (m mongoRepository) FindbyClientName(cn string) ([]Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println("Connection to MongoDB alive")
+	log.Println("Connection to MongoDB alive")
 
 	coll := m.db.Database("monitor").Collection("logfile")
-	results, err := coll.Find(context.TODO(), bson.D{{Key: "clientName", Value: cn}})
+	results, err := coll.Find(context.TODO(), bson.D{{Key: "ClientName", Value: cn}})
 	if err != nil {
 		return nil, err
 	}
@@ -75,21 +75,27 @@ func (m mongoRepository) Update() error {
 		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_INS\\logs\\log.txt"}, {Key: "ClientName", Value: "INSTINET"}},
 		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_ALDN\\logs\\log.txt"}, {Key: "ClientName", Value: "NYFIX"}},
 	}
+
+	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Connection to MongoDB alive")
+
 	coll := m.db.Database("monitor").Collection("logfile")
 	result, err := coll.InsertMany(context.TODO(), docs)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%v", len(result.InsertedIDs))
+	log.Printf("%v", len(result.InsertedIDs))
 	return nil
 }
 
 func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println("Connection to MongoDB alive")
+	log.Println("Connection to MongoDB alive")
 
 	coll := m.db.Database("monitor").Collection("logfile")
 	result, err := coll.DeleteMany(context.TODO(), bson.D{{}})

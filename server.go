@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"uaAlert/repository"
 
@@ -12,31 +11,34 @@ import (
 
 func main() {
 	db := initmongodb()
-	_ = db
 
 	repo := repository.New(db)
 	// repo.Update()
 
-	result, err := repo.DelAll()
-	if err != nil {log.Fatal(err)}
-	fmt.Println(result)
-	
+	// result, err := repo.DelAll()
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// log.Println(result)
+
 	clients, err := repo.FindAll()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	var cl repository.Client
-	for _ , cl = range clients {
-		fmt.Println(cl.ClientName)
+	for _, cl = range clients {
+		log.Println(cl.ClientName)
 	}
 
 	client, err := repo.FindbyClientName("BLP")
-	if err != nil { log.Fatal(err)}
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// var cl repository.Client
-	for _ , cl = range client {
-		fmt.Println(cl.ClientName)
+	for _, cl = range client {
+		log.Printf("Client name: %s, Log file on: %s",cl.ClientName,cl.LogFile)
 	}
 }
 
@@ -45,8 +47,8 @@ func initmongodb() *mongo.Client {
 	// Create a new client and connect to the server
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	fmt.Println("Successfully connected")
+	log.Println("Successfully connected")
 	return client
 }
