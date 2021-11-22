@@ -2,8 +2,10 @@ package services
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"regexp"
+	"strings"
 	"time"
 	"uaAlert/repository"
 )
@@ -39,6 +41,16 @@ func New(repo repository.Repository) Services {
 
 // var repo repository.Repository
 
+func deleteEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}
+
 func (s fileService) RevFile(fn string) (*[]string, error) {
 
 	file, err := os.Open(fn)
@@ -62,7 +74,7 @@ func (s fileService) RevFile(fn string) (*[]string, error) {
 	return &names, nil
 }
 
-func (s fileService) GetLocalLogTime(lf string) (*string, error) {
+func (s fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
 	rFile, err := s.RevFile(lf)
 	if err != nil {
 		return nil, err
@@ -73,21 +85,24 @@ func (s fileService) GetLocalLogTime(lf string) (*string, error) {
 		if i > 100 {
 			break
 		}
-		e := `(\d{8}-\d{2}:\d{2}:\d{2})`
-		r := regexp.MustCompile(e)
-		log := r.FindString(line)
-		logs = append(logs, log)
+		if strings.Contains(line, cn) {
+			e := `(\d{8}-\d{2}:\d{2}:\d{2})`
+			r := regexp.MustCompile(e)
+			log := r.FindString(line)
+			logs = append(logs, log)
+		}
 	}
-
-	log := logs[0]
+	l := deleteEmpty(logs)
+	log.Println(l)
+	log := l[0]
 	return &log, nil
 }
 
-func (s fileService) GetAllTimes(lf string) (*AllTime, error) {
+func (s fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
 	const layout = "20060102-15:04:05"
 	var a AllTime
 
-	llt, err := s.GetLocalLogTime(lf)
+	llt, err := s.GetLocalLogTime(cn, lf)
 	if err != nil {
 		return nil, err
 	}
@@ -96,19 +111,20 @@ func (s fileService) GetAllTimes(lf string) (*AllTime, error) {
 	if err != nil {
 		return nil, err
 	}
-	a.LogTime = lt.Add(time.Hour * 7)
-	a.SystemTime = time.Now()
+	a.LogTime = lt
+	a.SystemTime = time.Now().UTC()
 	a.DiffTime = a.SystemTime.Sub(a.LogTime)
 	return &a, nil
 }
 
 func (s fileService) CheckValidate(dt time.Duration) bool {
-	const st time.Duration = 2 * time.Minute
-	return st > dt
+	const t2 time.Duration = 2 * time.Minute
+	return t2 > dt
 }
 
 func (s fileService) CheckStatus(cn string, lf string) (*Customer, error) {
-	at, err := s.GetAllTimes(lf)
+	at, err := s.GetAllTimes(cn, lf)
+	log.Println(at)
 	if err != nil {
 		return nil, err
 	}

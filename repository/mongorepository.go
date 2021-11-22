@@ -24,7 +24,7 @@ func New(db *mongo.Client) Repository {
 
 func (m mongoRepository) FindAll() ([]Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Connection to MongoDB alive")
 
@@ -45,7 +45,7 @@ func (m mongoRepository) FindAll() ([]Client, error) {
 
 func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Connection to MongoDB alive")
 
@@ -65,7 +65,7 @@ func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
 func (m mongoRepository) Update() error {
 	docs, err := ConvJson()
 	if err != nil {
-		log.Fatalf("Can not load config %s", err)
+		log.Printf("Can not load config %s", err)
 	}
 	coll := m.db.Database("monitor").Collection("logfile")
 	var n int
@@ -81,7 +81,7 @@ func (m mongoRepository) Update() error {
 
 func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	log.Println("Connection to MongoDB alive")
 
@@ -94,16 +94,16 @@ func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	return result, nil
 }
 
-func (m mongoRepository) IsClientNameAdded(cn string) (bool, error){
+func (m mongoRepository) IsClientNameAdded(cn string) (bool, error) {
 	var client *Client
 	client, err := m.FindbyClientName(cn)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
-	if cn == client.ClientName{
+	if cn == client.ClientName {
 		return true, nil
 	}
 
-	return false,nil
+	return false, nil
 }

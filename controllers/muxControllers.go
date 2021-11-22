@@ -26,7 +26,7 @@ func (c muxController) ClientController(res http.ResponseWriter, req *http.Reque
 	fn, _ := c.repo.FindbyClientName(cn)
 	post, err := c.serv.CheckStatus(cn, fn.LogFile)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	res.WriteHeader(http.StatusOK)
 	json.NewEncoder(res).Encode(&post)
