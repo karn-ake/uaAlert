@@ -13,31 +13,41 @@ func main() {
 	db := initmongodb()
 
 	repo := repository.New(db)
-	// repo.Update()
-
+	
 	// result, err := repo.DelAll()
+	// if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	log.Println(result)
+		
+	// repo.Update()
+	// clients, err := repo.FindAll()
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	// log.Println(result)
 
-	clients, err := repo.FindAll()
-	if err != nil {
-		log.Fatal(err)
-	}
+	// var cl repository.Client
+	// for _, cl = range clients {
+	// 	log.Println(cl.ClientName,cl.LogFile)
+	// }
 
-	var cl repository.Client
-	for _, cl = range clients {
-		log.Println(cl.ClientName)
-	}
+	// for _, cl = range client {
+	// 	log.Printf("Client name: %s, Log file on: %s", cl.ClientName, cl.LogFile)
+	// }
 
-	client, err := repo.FindbyClientName("BLP")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// client, err := repo.FindbyClientName("BLP")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	for _, cl = range client {
-		log.Printf("Client name: %s, Log file on: %s", cl.ClientName, cl.LogFile)
+	// log.Printf("Client name: %s, Log file on: %s", client.ClientName, client.LogFile)
+
+	if b, err := repo.IsClientNameAdded(" BLP"); err == nil {
+		if b {
+			log.Println("This client name is already added")
+		} else {
+			log.Println("This client name is not added")
+		}
 	}
 }
 

@@ -10,8 +10,8 @@ import (
 )
 
 type Client struct {
-	LogFile    string `json:"logfile" bson:"logfile"`
-	ClientName string `json:"clientname" bson:"clientname"`
+	LogFile    string `json:"LogFile" bson:"LogFile"`
+	ClientName string `json:"ClientName" bson:"ClientName"`
 }
 
 type mongoRepository struct {
@@ -43,51 +43,39 @@ func (m mongoRepository) FindAll() ([]Client, error) {
 	return clients, nil
 }
 
-func (m mongoRepository) FindbyClientName(cn string) ([]Client, error) {
+func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Connection to MongoDB alive")
 
 	coll := m.db.Database("monitor").Collection("logfile")
-	results, err := coll.Find(context.TODO(), bson.D{{Key: "ClientName", Value: cn}})
+	result, err := coll.Find(context.TODO(), bson.D{{Key: "ClientName", Value: cn}})
 	if err != nil {
 		return nil, err
 	}
 
-	var clients []Client
-	for results.Next(context.TODO()) {
-		var client Client
-		results.Decode(&client)
-		clients = append(clients, client)
+	var client Client
+	for result.Next(context.TODO()) {
+		result.Decode(&client)
 	}
-	return clients, nil
+	return &client, nil
 }
 
 func (m mongoRepository) Update() error {
-	docs := []interface{}{
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_BLP\\logs\\log.txt"}, {Key: "ClientName", Value: "BLP"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_CLV\\logs\\log.txt"}, {Key: "ClientName", Value: "KASIKORN"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_CLV\\logs\\log.txt"}, {Key: "ClientName", Value: "KSAMCRD"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_CLV\\logs\\log.txt"}, {Key: "ClientName", Value: "KTAMCRD"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_CLV\\logs\\log.txt"}, {Key: "ClientName", Value: "MFCAMCRD"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_CLV\\logs\\log.txt"}, {Key: "ClientName", Value: "SCBAMCRD"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_INS\\logs\\log.txt"}, {Key: "ClientName", Value: "INSTINET"}},
-		bson.D{{Key: "LogFile", Value: "D:\\N2N\\UA_NOMURA\\BS_ALDN\\logs\\log.txt"}, {Key: "ClientName", Value: "NYFIX"}},
-	}
-
-	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Connection to MongoDB alive")
-
-	coll := m.db.Database("monitor").Collection("logfile")
-	result, err := coll.InsertMany(context.TODO(), docs)
+	docs, err := ConvJson()
 	if err != nil {
-		return err
+		log.Fatalf("Can not load config %s", err)
 	}
-
-	log.Printf("%v", len(result.InsertedIDs))
+	coll := m.db.Database("monitor").Collection("logfile")
+	var n int
+	for _, doc := range docs {
+		// log.Println(doc)
+		result, _ := coll.InsertOne(context.TODO(), bson.D{{Key: "LogFile", Value: doc.LogFile}, {Key: "ClientName", Value: doc.ClientName}})
+		// n++
+		log.Println(result.InsertedID)
+	}
+	log.Printf("Insert %d rows", n)
 	return nil
 }
 
@@ -104,4 +92,18 @@ func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	}
 
 	return result, nil
+}
+
+func (m mongoRepository) IsClientNameAdded(cn string) (bool, error){
+	var client *Client
+	client, err := m.FindbyClientName(cn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if cn == client.ClientName{
+		return true, nil
+	}
+
+	return false,nil
 }

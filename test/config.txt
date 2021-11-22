@@ -1,0 +1,8 @@
+D:\N2N\UA_NOMURA\BS_BLP\logs\log.txt, BLP
+D:\N2N\UA_NOMURA\BS_CLV\logs\log.txt, KASIKORN
+D:\N2N\UA_NOMURA\BS_CLV\logs\log.txt, KSAMCRD
+D:\N2N\UA_NOMURA\BS_CLV\logs\log.txt, KTAMCRD
+D:\N2N\UA_NOMURA\BS_CLV\logs\log.txt, MFCAMCRD
+D:\N2N\UA_NOMURA\BS_CLV\logs\log.txt, SCBAMCRD
+D:\N2N\UA_NOMURA\BS_INS\logs\log.txt, INSTINET
+D:\N2N\UA_NOMURA\BS_ALDN\logs\log.txt, NYFIX
