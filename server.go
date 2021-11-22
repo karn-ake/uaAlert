@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"uaAlert/repository"
+	"uaAlert/services"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -13,7 +14,17 @@ func main() {
 	db := initmongodb()
 
 	repo := repository.New(db)
-	
+	serv := services.New(repo)
+
+	fn, _ := repo.FindbyClientName("BLP")
+	at, _ := serv.GetAllTimes(fn.LogFile)
+	log.Printf("\nSystem time: %v\nLog time: %v\nDifferent time: %v",at.SystemTime,at.LogTime,at.DiffTime)
+	// bs, _ := serv.RevFile(fn.LogFile)
+
+	// for _, b := range *bs{
+	// 	log.Println(b)
+	// }
+
 	// result, err := repo.DelAll()
 	// if err != nil {
 	// 		log.Fatal(err)
@@ -42,13 +53,13 @@ func main() {
 
 	// log.Printf("Client name: %s, Log file on: %s", client.ClientName, client.LogFile)
 
-	if b, err := repo.IsClientNameAdded(" BLP"); err == nil {
-		if b {
-			log.Println("This client name is already added")
-		} else {
-			log.Println("This client name is not added")
-		}
-	}
+	// if b, err := repo.IsClientNameAdded(" BLP"); err == nil {
+	// 	if b {
+	// 		log.Println("This client name is already added")
+	// 	} else {
+	// 		log.Println("This client name is not added")
+	// 	}
+	// }
 }
 
 func initmongodb() *mongo.Client {
