@@ -63,6 +63,16 @@ func (s fileService) RevFile(fn string) (*[]string, error) {
 	return &names, nil
 }
 
+func deleteEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
+}
+
 func (s fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
 	rFile, err := s.RevFile(lf)
 	if err != nil {
@@ -81,8 +91,8 @@ func (s fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
 			logs = append(logs, log)
 		}
 	}
-
-	log := logs[0]
+	l := deleteEmpty(logs)
+	log := l[0]
 	return &log, nil
 }
 
