@@ -117,7 +117,7 @@ func (s fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
 
 func (s fileService) CheckValidate(dt time.Duration) bool {
 	const t2 time.Duration = 2 * time.Minute
-	return dt > t2
+	return t2 > dt
 }
 
 func (s fileService) CheckStatus(cn string, lf string) (*Customer, error) {
