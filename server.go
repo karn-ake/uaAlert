@@ -27,52 +27,6 @@ func main() {
 	})
 	rmux.GET("/api/{client}", cont.ClientController)
 	rmux.SERV(port)
-	// fn, _ := repo.FindbyClientName(client)
-	// // at, _ := serv.GetAllTimes(fn.LogFile)
-	// cs, _ := serv.CheckStatus(client, fn.LogFile)
-	// log.Printf("\nSystem time: %v\nLog time: %v\nDifferent time: %v",at.SystemTime,at.LogTime,at.DiffTime)
-	// log.Println(*cs)
-	// bs, _ := serv.RevFile(fn.LogFile)
-
-	// for _, b := range *bs{
-	// 	log.Println(b)
-	// }
-
-	// result, err := repo.DelAll()
-	// if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	log.Println(result)
-
-	// repo.Update()
-	// clients, err := repo.FindAll()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// var cl repository.Client
-	// for _, cl = range clients {
-	// 	log.Println(cl.ClientName,cl.LogFile)
-	// }
-
-	// for _, cl = range client {
-	// 	log.Printf("Client name: %s, Log file on: %s", cl.ClientName, cl.LogFile)
-	// }
-
-	// client, err := repo.FindbyClientName("BLP")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// log.Printf("Client name: %s, Log file on: %s", client.ClientName, client.LogFile)
-
-	// if b, err := repo.IsClientNameAdded(" BLP"); err == nil {
-	// 	if b {
-	// 		log.Println("This client name is already added")
-	// 	} else {
-	// 		log.Println("This client name is not added")
-	// 	}
-	// }
 }
 
 func initmongodb() *mongo.Client {
