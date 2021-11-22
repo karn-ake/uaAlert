@@ -2,8 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"net/http"
+	"uaAlert/controllers"
 	"uaAlert/repository"
+	"uaAlert/routes"
 	"uaAlert/services"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,13 +16,22 @@ import (
 
 func main() {
 	db := initmongodb()
-
 	repo := repository.New(db)
 	serv := services.New(repo)
+	cont := controllers.New(serv, repo)
+	rmux := routes.New(cont)
 
-	fn, _ := repo.FindbyClientName("BLP")
-	at, _ := serv.GetAllTimes(fn.LogFile)
-	log.Printf("\nSystem time: %v\nLog time: %v\nDifferent time: %v",at.SystemTime,at.LogTime,at.DiffTime)
+	const port string = ":8082"
+	rmux.GET("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Up and Running")
+	})
+	rmux.GET("/api/{client}", cont.ClientController)
+	rmux.SERV(port)
+	// fn, _ := repo.FindbyClientName(client)
+	// // at, _ := serv.GetAllTimes(fn.LogFile)
+	// cs, _ := serv.CheckStatus(client, fn.LogFile)
+	// log.Printf("\nSystem time: %v\nLog time: %v\nDifferent time: %v",at.SystemTime,at.LogTime,at.DiffTime)
+	// log.Println(*cs)
 	// bs, _ := serv.RevFile(fn.LogFile)
 
 	// for _, b := range *bs{
@@ -30,7 +43,7 @@ func main() {
 	// 		log.Fatal(err)
 	// 	}
 	// 	log.Println(result)
-		
+
 	// repo.Update()
 	// clients, err := repo.FindAll()
 	// if err != nil {

@@ -25,6 +25,14 @@ type AllTime struct {
 	DiffTime   time.Duration
 }
 
+type Customer struct {
+	Client     string
+	Status     bool
+	LogTime    time.Time
+	SystemTime time.Time
+	DiffTime   time.Duration
+}
+
 func New(repo repository.Repository) Services {
 	return fileService{repo}
 }
@@ -92,4 +100,23 @@ func (s fileService) GetAllTimes(lf string) (*AllTime, error) {
 	a.SystemTime = time.Now()
 	a.DiffTime = a.SystemTime.Sub(a.LogTime)
 	return &a, nil
+}
+
+func (s fileService) CheckValidate(dt time.Duration) bool {
+	const st time.Duration = 2 * time.Minute
+	return st > dt
+}
+
+func (s fileService) CheckStatus(cn string, lf string) (*Customer, error) {
+	at, err := s.GetAllTimes(lf)
+	if err != nil {
+		return nil, err
+	}
+	var c Customer
+	c.Client = cn
+	c.Status = s.CheckValidate(at.DiffTime)
+	c.LogTime = at.LogTime
+	c.SystemTime = at.SystemTime
+	c.DiffTime = at.DiffTime
+	return &c, nil
 }
