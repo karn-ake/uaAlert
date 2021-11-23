@@ -19,10 +19,10 @@ type mongoRepository struct {
 }
 
 func New(db *mongo.Client) Repository {
-	return mongoRepository{db}
+	return &mongoRepository{db}
 }
 
-func (m mongoRepository) FindAll() ([]Client, error) {
+func (m *mongoRepository) FindAll() ([]Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
@@ -43,7 +43,7 @@ func (m mongoRepository) FindAll() ([]Client, error) {
 	return clients, nil
 }
 
-func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
+func (m *mongoRepository) FindbyClientName(cn string) (*Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
@@ -62,7 +62,7 @@ func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
 	return &client, nil
 }
 
-func (m mongoRepository) Update() error {
+func (m *mongoRepository) Update() error {
 	docs, err := ConvJson()
 	if err != nil {
 		log.Fatalf("Can not load config %s", err)
@@ -79,7 +79,7 @@ func (m mongoRepository) Update() error {
 	return nil
 }
 
-func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
+func (m *mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
@@ -94,16 +94,16 @@ func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	return result, nil
 }
 
-func (m mongoRepository) IsClientNameAdded(cn string) (bool, error){
+func (m *mongoRepository) IsClientNameAdded(cn string) (bool, error) {
 	var client *Client
 	client, err := m.FindbyClientName(cn)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if cn == client.ClientName{
+	if cn == client.ClientName {
 		return true, nil
 	}
 
-	return false,nil
+	return false, nil
 }
