@@ -79,7 +79,7 @@ func (m *mongoRepository) Update() error {
 	return nil
 }
 
-func (m *mongoRepository) DelAll() (*mongo.DeleteResult, error) {
+func (m *mongoRepository) DelAll() error {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
@@ -88,10 +88,10 @@ func (m *mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	coll := m.db.Database("monitor").Collection("logfile")
 	result, err := coll.DeleteMany(context.TODO(), bson.D{{}})
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return result, nil
+	log.Println(result)
+	return nil
 }
 
 func (m *mongoRepository) IsClientNameAdded(cn string) (bool, error) {
