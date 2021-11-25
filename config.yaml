@@ -1,0 +1,5 @@
+version: 2
+
+app:
+  port: ":8080"
+  configFile: "D:\\Go\\src\\uaAlert\\configfile.txt"

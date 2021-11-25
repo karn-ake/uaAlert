@@ -5,11 +5,16 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 func ConvJson() (clients []Client, err error) {
+
+	configFile := viper.GetString("app.configFile")
 	//Open config file location
-	file, err := os.Open("D:\\Go\\src\\uaAlert\\config.txt")
+	// file, err := os.Open("D:\\Go\\src\\uaAlert\\configfile.txt")
+	file, err := os.Open(configFile)
 	if err != nil {
 		log.Fatalf("Can't open file %v", err)
 	}
