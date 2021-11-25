@@ -71,9 +71,14 @@ func (m *mongoRepository) Update() error {
 	var n int
 	for _, doc := range docs {
 		// log.Println(doc)
-		result, _ := coll.InsertOne(context.TODO(), bson.D{{Key: "LogFile", Value: doc.LogFile}, {Key: "ClientName", Value: doc.ClientName}})
-		// n++
-		log.Println(result.InsertedID)
+		a, _ := m.IsClientNameAdded(doc.ClientName)
+		if a {
+			log.Println("client have already been added")
+		} else {
+			result, _ := coll.InsertOne(context.TODO(), bson.D{{Key: "LogFile", Value: doc.LogFile}, {Key: "ClientName", Value: doc.ClientName}})
+			n++
+			log.Println(result.InsertedID)
+		}
 	}
 	log.Printf("Insert %d rows", n)
 	return nil

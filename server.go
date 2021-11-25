@@ -19,6 +19,7 @@ func main() {
 	serv := services.New(repo)
 	cont := controllers.NewFiberController(repo, serv)
 
+	//repo.DelAll()
 	port := viper.GetString("app.port")
 	log.Println(port)
 
@@ -27,6 +28,8 @@ func main() {
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Fiber up and running")
 	})
+	app.Get("/api/updateconfig", cont.UpdateConfig)
+	app.Get("/api/clearconfig", cont.DeleteConfig)
 	app.Get("/api/:client", cont.ClientController)
 	log.Fatal(app.Listen(port))
 
@@ -56,6 +59,9 @@ func init() {
 	viper.SetConfigName("config")
 	// viper.SetConfigFile("yaml")
 	viper.AddConfigPath("D:\\Go\\src\\uaAlert\\")
+
+	//Config path on OMS1-UAT
+	//viper.AddConfigPath("D:\\Scripts\\Go\\uaAlert\\")
 	if err := viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			log.Fatalln("config file is not found")

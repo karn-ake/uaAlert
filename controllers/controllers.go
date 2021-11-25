@@ -12,4 +12,6 @@ type MuxControllers interface {
 
 type FiberControllers interface {
 	ClientController(ctx *fiber.Ctx) error
+	UpdateConfig(ctx *fiber.Ctx) (err error)
+	DeleteConfig(ctx *fiber.Ctx) (err error)
 }

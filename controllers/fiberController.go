@@ -35,3 +35,27 @@ func (c fiberController) ClientController(ctx *fiber.Ctx) error {
 
 	return nil
 }
+
+func (c fiberController) UpdateConfig(ctx *fiber.Ctx) (err error) {
+	if c.repo.Update(); err != nil {
+		ctx.Status(fiber.StatusInternalServerError)
+	}
+
+	s := "ConfigFile have already been updated"
+	ctx.Status(fiber.StatusOK)
+	ctx.SendString(s)
+
+	return nil
+}
+
+func (c fiberController) DeleteConfig(ctx *fiber.Ctx) (err error) {
+	if c.repo.DelAll(); err != nil {
+		ctx.Status(fiber.StatusInternalServerError)
+	}
+
+	s := "ConfigFile have already been deleted"
+	ctx.Status(fiber.StatusOK)
+	ctx.SendString(s)
+
+	return nil
+}
