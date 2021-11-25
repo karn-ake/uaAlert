@@ -44,7 +44,7 @@ func (s *fileService) RevFile(fn string) (*[]string, error) {
 
 	file, err := os.Open(fn)
 	if err != nil {
-		return nil, err
+		return nil, ErrOpen
 	}
 	defer file.Close()
 
@@ -66,7 +66,7 @@ func (s *fileService) RevFile(fn string) (*[]string, error) {
 func (s *fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
 	rFile, err := s.RevFile(lf)
 	if err != nil {
-		return nil, err
+		return nil, ErrRevFile
 	}
 
 	var logs []string
@@ -92,12 +92,12 @@ func (s *fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
 
 	llt, err := s.GetLocalLogTime(cn, lf)
 	if err != nil {
-		return nil, err
+		return nil, ErrGetLocalLogTime
 	}
 
 	lt, err := time.Parse(layout, *llt)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	a.LogTime = lt
 	a.SystemTime = time.Now().UTC()
@@ -113,7 +113,7 @@ func (s *fileService) CheckValidate(dt time.Duration) bool {
 func (s *fileService) CheckStatus(cn string, lf string) (*Customer, error) {
 	at, err := s.GetAllTimes(cn, lf)
 	if err != nil {
-		return nil, err
+		return nil, ErrGetAllTime
 	}
 	var c Customer
 	c.Client = cn

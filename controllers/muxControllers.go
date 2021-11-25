@@ -16,7 +16,7 @@ type muxController struct {
 	repo repository.Repository
 }
 
-func New(serv services.Services, repo repository.Repository) Controllers {
+func New(serv services.Services, repo repository.Repository) MuxControllers {
 	return &muxController{serv, repo}
 }
 

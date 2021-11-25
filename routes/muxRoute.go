@@ -9,12 +9,12 @@ import (
 )
 
 type muxRoute struct {
-	cont controllers.Controllers
+	cont controllers.MuxControllers
 }
 
 var muxRouter = mux.NewRouter()
 
-func New(cont controllers.Controllers) Routes {
+func New(cont controllers.MuxControllers) Routes {
 	return &muxRoute{cont}
 }
 
