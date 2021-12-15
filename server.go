@@ -8,6 +8,7 @@ import (
 	"uaAlert/services"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -25,6 +26,9 @@ func main() {
 
 	// Fiber routeconfiguration
 	app := fiber.New()
+	app.Use(logger.New(logger.Config{
+		Format: "[${ip}]:${port} ${status} - ${method} ${path}\n",
+	}))
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("Fiber up and running")
 	})
@@ -32,16 +36,6 @@ func main() {
 	app.Get("/api/clearconfig", cont.DeleteConfig)
 	app.Get("/api/:client", cont.ClientController)
 	log.Fatal(app.Listen(port))
-
-	// Map Controller to Route
-	// rmux := routes.New(cont)
-
-	// Mux net/http configuration
-	// rmux.GET("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	fmt.Fprintln(w, "Up and Running")
-	// })
-	// rmux.GET("/api/{client}", cont.ClientController)
-	// rmux.SERV(port)
 }
 
 func initmongodb() *mongo.Client {

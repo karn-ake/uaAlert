@@ -14,7 +14,7 @@ func NewMock() *mongoRepositoryMock {
 
 func (m *mongoRepositoryMock) FindAll() ([]Client, error) {
 	args := m.Called()
-	return args.Get(0).([]Client),args.Error(1)
+	return args.Get(0).([]Client), args.Error(1)
 }
 
 func (m *mongoRepositoryMock) FindbyClientName(cn string) (*Client, error) {

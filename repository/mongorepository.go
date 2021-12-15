@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"log"
+	"sync"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -63,14 +64,16 @@ func (m *mongoRepository) FindbyClientName(cn string) (*Client, error) {
 }
 
 func (m *mongoRepository) Update() error {
+	var wg sync.WaitGroup
 	docs, err := ConvJson()
 	if err != nil {
 		log.Fatalf("Can not load config %s", err)
 	}
 	coll := m.db.Database("monitor").Collection("logfile")
 	var n int
+	// log.Println(len(docs))
+	wg.Add(len(docs))
 	for _, doc := range docs {
-		// log.Println(doc)
 		a, _ := m.IsClientNameAdded(doc.ClientName)
 		if a {
 			log.Println("client have already been added")
@@ -79,7 +82,9 @@ func (m *mongoRepository) Update() error {
 			n++
 			log.Println(result.InsertedID)
 		}
+		wg.Done()
 	}
+	wg.Wait()
 	log.Printf("Insert %d rows", n)
 	return nil
 }
