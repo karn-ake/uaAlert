@@ -4,7 +4,7 @@ option go_package = "./pb";
 
 message Client {
     string client = 1;
-    bool status = 2;
+    string status = 2;
     string logtime = 3;
     string systemtime = 4;
     string difftime = 5;

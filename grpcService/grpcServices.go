@@ -3,6 +3,7 @@ package grpcservice
 import (
 	"context"
 	"log"
+	"strconv"
 	"uaAlert/pb"
 	"uaAlert/repository"
 	"uaAlert/services"
@@ -23,12 +24,12 @@ func (*GrpcServer) CreateStatus(ctx context.Context, req *pb.ClientsRequest) (*p
 	cn := req.GetClient()
 	fn, _ := repo.FindbyClientName(cn)
 	client, _ := serv.CheckStatus(cn, fn.LogFile)
-
+	st := strconv.FormatBool(client.Status)
 	layout := "15:04:05"
 
 	cs := &pb.Client{
 		Client:     cn,
-		Status:     client.Status,
+		Status:     st,
 		Logtime:    client.LogTime.Format(layout),
 		Systemtime: client.SystemTime.Format(layout),
 		Difftime:   client.DiffTime.String(),
