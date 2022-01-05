@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"net/http"
 	"uaAlert/controllers"
 	"uaAlert/repository"
-	"uaAlert/routes"
 	"uaAlert/services"
 
+	"github.com/gofiber/fiber/v2"
+	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -18,61 +17,31 @@ func main() {
 	db := initmongodb()
 	repo := repository.New(db)
 	serv := services.New(repo)
-	cont := controllers.New(serv, repo)
-	rmux := routes.New(cont)
+	cont := controllers.NewFiberController(repo, serv)
 
-	const port string = ":8082"
-	rmux.GET("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Up and Running")
+	//repo.DelAll()
+	port := viper.GetString("app.port")
+	log.Println(port)
+
+	// Fiber routeconfiguration
+	app := fiber.New()
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Fiber up and running")
 	})
-	rmux.GET("/api/{client}", cont.ClientController)
-	rmux.SERV(port)
-	// fn, _ := repo.FindbyClientName(client)
-	// // at, _ := serv.GetAllTimes(fn.LogFile)
-	// cs, _ := serv.CheckStatus(client, fn.LogFile)
-	// log.Printf("\nSystem time: %v\nLog time: %v\nDifferent time: %v",at.SystemTime,at.LogTime,at.DiffTime)
-	// log.Println(*cs)
-	// bs, _ := serv.RevFile(fn.LogFile)
+	app.Get("/api/updateconfig", cont.UpdateConfig)
+	app.Get("/api/clearconfig", cont.DeleteConfig)
+	app.Get("/api/:client", cont.ClientController)
+	log.Fatal(app.Listen(port))
 
-	// for _, b := range *bs{
-	// 	log.Println(b)
-	// }
+	// Map Controller to Route
+	// rmux := routes.New(cont)
 
-	// result, err := repo.DelAll()
-	// if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	log.Println(result)
-
-	// repo.Update()
-	// clients, err := repo.FindAll()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// var cl repository.Client
-	// for _, cl = range clients {
-	// 	log.Println(cl.ClientName,cl.LogFile)
-	// }
-
-	// for _, cl = range client {
-	// 	log.Printf("Client name: %s, Log file on: %s", cl.ClientName, cl.LogFile)
-	// }
-
-	// client, err := repo.FindbyClientName("BLP")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// log.Printf("Client name: %s, Log file on: %s", client.ClientName, client.LogFile)
-
-	// if b, err := repo.IsClientNameAdded(" BLP"); err == nil {
-	// 	if b {
-	// 		log.Println("This client name is already added")
-	// 	} else {
-	// 		log.Println("This client name is not added")
-	// 	}
-	// }
+	// Mux net/http configuration
+	// rmux.GET("/", func(w http.ResponseWriter, r *http.Request) {
+	// 	fmt.Fprintln(w, "Up and Running")
+	// })
+	// rmux.GET("/api/{client}", cont.ClientController)
+	// rmux.SERV(port)
 }
 
 func initmongodb() *mongo.Client {
@@ -84,4 +53,21 @@ func initmongodb() *mongo.Client {
 	}
 	log.Println("Successfully connected")
 	return client
+}
+
+func init() {
+	viper.SetConfigName("config")
+	// viper.SetConfigFile("yaml")
+	viper.AddConfigPath("D:\\Go\\src\\uaAlert\\")
+
+	//Config path on OMS1-UAT
+	//viper.AddConfigPath("D:\\Scripts\\Go\\uaAlert\\")
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			log.Fatalln("config file is not found")
+		} else {
+			log.Fatalf("cannot load config file: %v", err)
+		}
+	}
+	log.Println("config file was loaded")
 }

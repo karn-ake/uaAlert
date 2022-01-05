@@ -19,10 +19,10 @@ type mongoRepository struct {
 }
 
 func New(db *mongo.Client) Repository {
-	return mongoRepository{db}
+	return &mongoRepository{db}
 }
 
-func (m mongoRepository) FindAll() ([]Client, error) {
+func (m *mongoRepository) FindAll() ([]Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Println(err)
 	}
@@ -43,7 +43,7 @@ func (m mongoRepository) FindAll() ([]Client, error) {
 	return clients, nil
 }
 
-func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
+func (m *mongoRepository) FindbyClientName(cn string) (*Client, error) {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Println(err)
 	}
@@ -62,7 +62,7 @@ func (m mongoRepository) FindbyClientName(cn string) (*Client, error) {
 	return &client, nil
 }
 
-func (m mongoRepository) Update() error {
+func (m *mongoRepository) Update() error {
 	docs, err := ConvJson()
 	if err != nil {
 		log.Printf("Can not load config %s", err)
@@ -71,15 +71,20 @@ func (m mongoRepository) Update() error {
 	var n int
 	for _, doc := range docs {
 		// log.Println(doc)
-		result, _ := coll.InsertOne(context.TODO(), bson.D{{Key: "LogFile", Value: doc.LogFile}, {Key: "ClientName", Value: doc.ClientName}})
-		// n++
-		log.Println(result.InsertedID)
+		a, _ := m.IsClientNameAdded(doc.ClientName)
+		if a {
+			log.Println("client have already been added")
+		} else {
+			result, _ := coll.InsertOne(context.TODO(), bson.D{{Key: "LogFile", Value: doc.LogFile}, {Key: "ClientName", Value: doc.ClientName}})
+			n++
+			log.Println(result.InsertedID)
+		}
 	}
 	log.Printf("Insert %d rows", n)
 	return nil
 }
 
-func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
+func (m *mongoRepository) DelAll() error {
 	if err := m.db.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Println(err)
 	}
@@ -88,13 +93,17 @@ func (m mongoRepository) DelAll() (*mongo.DeleteResult, error) {
 	coll := m.db.Database("monitor").Collection("logfile")
 	result, err := coll.DeleteMany(context.TODO(), bson.D{{}})
 	if err != nil {
-		return nil, err
+		return err
 	}
-
-	return result, nil
+	log.Println(result)
+	return nil
 }
 
+<<<<<<< HEAD
 func (m mongoRepository) IsClientNameAdded(cn string) (bool, error) {
+=======
+func (m *mongoRepository) IsClientNameAdded(cn string) (bool, error) {
+>>>>>>> office
 	var client *Client
 	client, err := m.FindbyClientName(cn)
 	if err != nil {

@@ -16,11 +16,11 @@ type muxController struct {
 	repo repository.Repository
 }
 
-func New(serv services.Services, repo repository.Repository) Controllers {
-	return muxController{serv, repo}
+func New(serv services.Services, repo repository.Repository) MuxControllers {
+	return &muxController{serv, repo}
 }
 
-func (c muxController) ClientController(res http.ResponseWriter, req *http.Request) {
+func (c *muxController) ClientController(res http.ResponseWriter, req *http.Request) {
 	res.Header().Set("Content-Type", "application/json")
 	cn := strings.ToUpper(mux.Vars(req)["client"])
 	fn, _ := c.repo.FindbyClientName(cn)

@@ -36,11 +36,12 @@ type Customer struct {
 }
 
 func New(repo repository.Repository) Services {
-	return fileService{repo}
+	return &fileService{repo}
 }
 
 // var repo repository.Repository
 
+<<<<<<< HEAD
 func deleteEmpty(s []string) []string {
 	var r []string
 	for _, str := range s {
@@ -52,10 +53,13 @@ func deleteEmpty(s []string) []string {
 }
 
 func (s fileService) RevFile(fn string) (*[]string, error) {
+=======
+func (s *fileService) RevFile(fn string) (*[]string, error) {
+>>>>>>> office
 
 	file, err := os.Open(fn)
 	if err != nil {
-		return nil, err
+		return nil, ErrOpen
 	}
 	defer file.Close()
 
@@ -74,10 +78,14 @@ func (s fileService) RevFile(fn string) (*[]string, error) {
 	return &names, nil
 }
 
+<<<<<<< HEAD
 func (s fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
+=======
+func (s *fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
+>>>>>>> office
 	rFile, err := s.RevFile(lf)
 	if err != nil {
-		return nil, err
+		return nil, ErrRevFile
 	}
 
 	var logs []string
@@ -93,23 +101,30 @@ func (s fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
 		}
 	}
 	l := deleteEmpty(logs)
+<<<<<<< HEAD
 	log.Println(l)
+=======
+>>>>>>> office
 	log := l[0]
 	return &log, nil
 }
 
+<<<<<<< HEAD
 func (s fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
+=======
+func (s *fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
+>>>>>>> office
 	const layout = "20060102-15:04:05"
 	var a AllTime
 
 	llt, err := s.GetLocalLogTime(cn, lf)
 	if err != nil {
-		return nil, err
+		return nil, ErrGetLocalLogTime
 	}
 
 	lt, err := time.Parse(layout, *llt)
 	if err != nil {
-		return nil, err
+		return nil, ErrParse
 	}
 	a.LogTime = lt
 	a.SystemTime = time.Now().UTC()
@@ -117,16 +132,25 @@ func (s fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
 	return &a, nil
 }
 
+<<<<<<< HEAD
 func (s fileService) CheckValidate(dt time.Duration) bool {
+=======
+func (s *fileService) CheckValidate(dt time.Duration) bool {
+>>>>>>> office
 	const t2 time.Duration = 2 * time.Minute
 	return t2 > dt
 }
 
+<<<<<<< HEAD
 func (s fileService) CheckStatus(cn string, lf string) (*Customer, error) {
 	at, err := s.GetAllTimes(cn, lf)
 	log.Println(at)
+=======
+func (s *fileService) CheckStatus(cn string, lf string) (*Customer, error) {
+	at, err := s.GetAllTimes(cn, lf)
+>>>>>>> office
 	if err != nil {
-		return nil, err
+		return nil, ErrGetAllTime
 	}
 	var c Customer
 	c.Client = cn
