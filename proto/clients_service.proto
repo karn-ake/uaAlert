@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+import "clients_message.proto";
+
+message ClientsRequest {
+    string client = 1;
+}
+
+message ClientsResponse {
+    Client status = 1;
+}
+
+service ClientsService {
+    rpc CreateStatus (ClientsRequest) returns (ClientsResponse) {};
+}
