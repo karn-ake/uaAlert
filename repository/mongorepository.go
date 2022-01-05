@@ -99,11 +99,7 @@ func (m *mongoRepository) DelAll() error {
 	return nil
 }
 
-<<<<<<< HEAD
 func (m mongoRepository) IsClientNameAdded(cn string) (bool, error) {
-=======
-func (m *mongoRepository) IsClientNameAdded(cn string) (bool, error) {
->>>>>>> office
 	var client *Client
 	client, err := m.FindbyClientName(cn)
 	if err != nil {

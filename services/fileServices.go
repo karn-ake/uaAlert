@@ -41,21 +41,7 @@ func New(repo repository.Repository) Services {
 
 // var repo repository.Repository
 
-<<<<<<< HEAD
-func deleteEmpty(s []string) []string {
-	var r []string
-	for _, str := range s {
-		if str != "" {
-			r = append(r, str)
-		}
-	}
-	return r
-}
-
 func (s fileService) RevFile(fn string) (*[]string, error) {
-=======
-func (s *fileService) RevFile(fn string) (*[]string, error) {
->>>>>>> office
 
 	file, err := os.Open(fn)
 	if err != nil {
@@ -78,11 +64,7 @@ func (s *fileService) RevFile(fn string) (*[]string, error) {
 	return &names, nil
 }
 
-<<<<<<< HEAD
 func (s fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
-=======
-func (s *fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
->>>>>>> office
 	rFile, err := s.RevFile(lf)
 	if err != nil {
 		return nil, ErrRevFile
@@ -101,19 +83,12 @@ func (s *fileService) GetLocalLogTime(cn string, lf string) (*string, error) {
 		}
 	}
 	l := deleteEmpty(logs)
-<<<<<<< HEAD
 	log.Println(l)
-=======
->>>>>>> office
 	log := l[0]
 	return &log, nil
 }
 
-<<<<<<< HEAD
 func (s fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
-=======
-func (s *fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
->>>>>>> office
 	const layout = "20060102-15:04:05"
 	var a AllTime
 
@@ -132,23 +107,14 @@ func (s *fileService) GetAllTimes(cn string, lf string) (*AllTime, error) {
 	return &a, nil
 }
 
-<<<<<<< HEAD
 func (s fileService) CheckValidate(dt time.Duration) bool {
-=======
-func (s *fileService) CheckValidate(dt time.Duration) bool {
->>>>>>> office
 	const t2 time.Duration = 2 * time.Minute
 	return t2 > dt
 }
 
-<<<<<<< HEAD
 func (s fileService) CheckStatus(cn string, lf string) (*Customer, error) {
 	at, err := s.GetAllTimes(cn, lf)
 	log.Println(at)
-=======
-func (s *fileService) CheckStatus(cn string, lf string) (*Customer, error) {
-	at, err := s.GetAllTimes(cn, lf)
->>>>>>> office
 	if err != nil {
 		return nil, ErrGetAllTime
 	}
